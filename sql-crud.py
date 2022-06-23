@@ -1,5 +1,5 @@
 from sqlalchemy import (
-    create_engine, Column, Integer, String
+    create_engine, Column, Integer, String, Float
 )
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -18,6 +18,15 @@ class Programmer(base):
     nationality = Column(String)
     famous_for = Column(String)
 
+# create a class-based model for the "Games" table
+class Game(base):
+    __tablename__ = "Game"
+    id = Column(Integer(), primary_key=True)
+    name = Column(String)
+    release_year = Column(Integer)
+    console = Column(String)
+    score = Column(Float)
+    
 
 # instead of connecting to the database directly, we will ask for a session
 # create a new instance of sessionmaker, then point to our engine (the db)
@@ -28,7 +37,13 @@ session = Session()
 # creating the database using declarative_base subclass
 base.metadata.create_all(db)
 
-
+# creating records on our Games table
+total_war = Game(
+    name = "Total War: Warhammer 3",
+    release_year = 2022,
+    console = "Computer",
+    score = 9.1
+)
 # creating records on our Programmer table
 ada_lovelace = Programmer(
     first_name="Ada",
@@ -97,6 +112,11 @@ simon_mortensen = Programmer(
 # commit our session to the database
 # session.commit()
 
+session.add(total_war)
+
+# commit our session to the database
+session.commit()
+
 # # updating single record
 # programmer = session.query(Programmer).filter_by(id=7).first()
 # programmer.famous_for = "World President"
@@ -139,14 +159,26 @@ simon_mortensen = Programmer(
 #     session.commit()
 
 
+# # query the database to find all Programmers
+# programmers = session.query(Programmer)
+# for programmer in programmers:
+#     print(
+#         programmer.id,
+#         programmer.first_name + " " + programmer.last_name,
+#         programmer.gender,
+#         programmer.nationality,
+#         programmer.famous_for,
+#         sep=" | "
+#     )
+
 # query the database to find all Programmers
-programmers = session.query(Programmer)
-for programmer in programmers:
+games = session.query(Game)
+for game in games:
     print(
-        programmer.id,
-        programmer.first_name + " " + programmer.last_name,
-        programmer.gender,
-        programmer.nationality,
-        programmer.famous_for,
+        game.id,
+        game.name,
+        game.release_year,
+        game.console,
+        game.score,
         sep=" | "
     )
